@@ -2,18 +2,28 @@ window.onload = function() {
     
     "use strict";
     
-    var game = new Phaser.Game( 1200, 400, Phaser.CANVAS, 'game', { preload: preload, create: create, update: update } );
+    var game = new Phaser.Game( 1200, 800, Phaser.CANVAS, 'game', { preload: preload, create: create, update: update } );
     
     function preload() {
         // Load an image and call it 'carsprite'.
         game.load.spritesheet( 'carsprite', 'assets/caryou.png', 594, 400);
-		game.load.image( 'carsprite2', 'assets/carOther.png' );
+		game.load.image( 'carsprite2', 'assets/carOther2.png' );
 		game.load.image( 'carWrecked', 'assets/carOtherWrecked.png');
-		game.load.image( 'bg', 'assets/BG.png' );
-		game.load.audio('woof', 'assets/woof.ogg');
-		game.load.audio('meow', 'assets/meow.ogg');
+		game.load.image( 'bg', 'assets/BG3.png' );
+		game.load.image( 'road', 'assets/clouds.png' )
+		game.load.audio('clunk', 'assets/clunk.ogg');
+		game.load.audio('music', 'assets/music.ogg');
+		game.load.audio('vroom', 'assets/vroom.ogg');
+		game.load.audio('victory', 'assets/victory.ogg');
+		game.load.audio('lose', 'assets/lose.ogg');
+		game.load.image( 'hired', 'assets/BGcarwin.png');
+		game.load.audio('meow','assets/meow.ogg');
+		game.load.spritesheet('cats', 'assets/catsheet3.png', 362, 400);
     }
     
+	var win;
+	var music;
+	var vroom;
     var car;
 	var carOn = false;
 	var floor;
@@ -30,138 +40,174 @@ window.onload = function() {
 	var car5;
 	var carswitch = true;
 	var currentPos;
-	var third = 0;
-	var seventh = 0;
+	var count = 0;
+	var tenth = 0;
+	var clunk;
+	var doublejump = false;
+	var bg;
+	var road;
+	var lose;
+	var cooldown = 0;
+	var meow;
     function create() {
-	game.add.tileSprite(0, 0, 200600, 400, 'bg');
-	 game.world.setBounds(0, 0, 200600, 400);
+		bg = game.add.tileSprite(0, 0, 1200, 50000, 'bg');
+		bg.fixedToCamera=true;
+		road = game.add.tileSprite(0, 0, 1200, 50000, 'road');
+		game.world.setBounds(0, 0, 1200, 50000);
         // Create a sprite at the center of the screen using the 'carsprite' image.
-        car = game.add.sprite( game.world.centerX - 3000, game.world.centerY, 'carsprite' );
-		car.width = 200;
-		car.height = 100;
+        car = game.add.sprite( game.world.centerX , 50000, 'cats' );
+		car.width = 170;
+		car.height = 170;
         // so it will be truly centered.
 		//car.animations.add('carsprite2', true);
 		
         car.anchor.setTo( 0, -2 );
-		game.physics.arcade.gravity.y = 2250;
+		game.physics.arcade.gravity.y = 1050;
         // Turn on the arcade physics engine for this sprite.
         game.physics.enable( car, Phaser.Physics.ARCADE );
 		
-		car.animations.add('drive', [0,1,2],6,true);
+		car.animations.add('fly', [0,1,2],7,true);
+		car.animations.add('boost',[3,4],7, true);
+		car.animations.add('boost2',[4],7, true);
+		
 		
 		// creating npc cars
-		car2 = game.add.sprite( car.body.x + 200, game.world.centerY, 'carsprite2' );
+		car2 = game.add.sprite( car.body.x - 1000, 50000, 'carsprite' );
 		game.physics.enable( car2, Phaser.Physics.ARCADE );
 		car2.body.collideWorldBounds = true;
 		car2.anchor.setTo( 0, -2 );
 		car2.width = 200;
 		car2.height = 100;
 		
-		car3 = game.add.sprite( car.body.x + 380, game.world.centerY, 'carsprite2' );
+		car3 = game.add.sprite( car.body.x + 1000, 50000, 'carsprite' );
 		game.physics.enable( car3, Phaser.Physics.ARCADE );
 		car3.body.collideWorldBounds = true;
 		car3.anchor.setTo( 0, -2 );
 		car3.width = 200;
 		car3.height = 100;
 		
-		car4 = game.add.sprite( car.body.x + 580, game.world.centerY, 'carsprite2' );
+		car4 = game.add.sprite( car.body.x + 500, 50000, 'carsprite2' );
 		game.physics.enable( car4, Phaser.Physics.ARCADE );
 		car4.body.collideWorldBounds = true;
 		car4.anchor.setTo( 0, -2 );
 		car4.width = 200;
 		car4.height = 100;
 		
-		car5 = game.add.sprite( car.body.x + 780, game.world.centerY, 'carsprite2' );
+		car5 = game.add.sprite( car.body.x - 500, 50000, 'carsprite2' );
 		game.physics.enable( car5, Phaser.Physics.ARCADE );
 		car5.body.collideWorldBounds = true;
 		car5.anchor.setTo( 0, -2 );
 		car5.width = 200;
 		car5.height = 100;
+		//car5.body.gravity = 200;
 		
         car.body.collideWorldBounds = true;
-		car2.body.collideWorldBounds = true;
-		car3.body.collideWorldBounds = true;
-		car4.body.collideWorldBounds = true;
-		car5.body.collideWorldBounds = true;
 		
+		car2.body.immovable= true;
+		car3.body.immovable= true;
+		car4.body.immovable= true;
+		car5.body.immovable= true;
 		
+		clunk = game.add.audio('clunk');
+		vroom = game.add.audio('vroom');
+		music = game.add.audio('music');
+		win = game.add.audio('victory',3);
+		lose = game.add.audio('lose');
+		meow = game.add.audio('meow');
+		music.play();
 		cursors = game.input.keyboard.createCursorKeys();
 		jump = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+		//game.camera.follow(car);
     }
     
     function update() {
+	//	bug fix
+		if (tenth > 4){
+			tenth = 4;
+		
+		}
 		carOn = false;
 		if(car.body.y < 10){
 			car.body.y = 20;
 			}
+		if (car.body.y < 500 && !win.isPlaying){
+			win.play();
+			}
+		game.camera.y = car.body.y - 550;
+		//controlling different speeds
+		car2.body.velocity.y = -150 * (tenth +1);
+		car3.body.velocity.y = -150 * (tenth +1);
+		car4.body.velocity.y = -170 * (tenth +1);
+		car5.body.velocity.y = -170 * (tenth +1);
+		car2.body.velocity.x = 95 * (tenth +1);
+		car3.body.velocity.x = -75 * (tenth +1);
+		car4.body.velocity.x = 75 * (tenth +1);
+		car5.body.velocity.x = -95 * (tenth +1);
 		
-		game.camera.x = car.body.x - 150;
-		car2.body.velocity.x = 50 * (seventh +1);
-		car3.body.velocity.x = 50 * (seventh +2);
-		car4.body.velocity.x = 50 * (seventh +3);
-		car5.body.velocity.x = 50 * (seventh +4);
-		if (!carswitch){
-			car4.body.velocity.y = -100;
+		// wall scrolling
+		if ( car2.body.x > 900){
+			car2.body.x = 0;
 			}
-		if (car.body.x > car2.body.x + 1500){
-			car2.loadTexture('carsprite2');
-			car2.body.x = car.body.x + 1500;
-			if (seventh == 7){
-				car2.kill();
-				}
+		if ( car3.body.x < 200){
+			car3.body.x = 1100;
 			}
-		if (car.body.x > car3.body.x + 1500){
-		car3.loadTexture('carsprite2');
-			car3.body.x = car.body.x + 1500 + ( 75 * seventh +1);;
-			car3.body.velocity.x += 100;
-			if (seventh == 7){
-				car3.kill();
-				}
+		if ( car4.body.x > 900){
+			car4.body.x = 0;
 			}
-		if (car.body.x > car4.body.x + 1500){
+		if ( car5.body.x < 200){
+			car5.body.x = 1100;
+			}
+		//kill cars at height
+		if (car2.body.y < 500){
+			car2.kill();
+			}
+		if (car3.body.y < 500){
+			car3.kill();
+			}
+		if (car4.body.y < 500){
+			car4.kill();
+			}
+		if (car5.body.y < 500){
+			car5.kill();
+			}
+		//reuse cars
+		if (car.body.y < car2.body.y - 2500 || car.body.y > car2.body.y + 1500){
+			car2.loadTexture('carsprite');
+			car2.body.y = car.body.y - 600;
+			
+			}
+		if (car.body.y < car3.body.y - 2500 || car.body.y > car3.body.y + 1500){
+		car3.loadTexture('carsprite');
+			car3.body.y = car.body.y - 600 ;
+			
+			
+			}
+		if (car.body.y < car4.body.y - 2500 || car.body.y > car4.body.y + 1500){
 		car4.loadTexture('carsprite2');
-			car4.body.x = car.body.x + 1500 + ( 100 * seventh +1);
-			third +=1;
-			seventh+=1;
-			if (third = 3){
-				car4.body.y += 1000;
-				car4.body.velocity.y -= 400;
+			car4.body.y = car.body.y- 800 ;
+			count +=1;
+			tenth+=1;
+			
+			
+			
 			}
-			if (seventh == 7){
-				car4.kill();
-				}
-			carswitch = false;
-			}
-		if (car.body.x > car5.body.x + 1500){
+		if (car.body.y < car5.body.y - 2500 || car.body.y > car5.body.y + 1500){
 		car5.loadTexture('carsprite2');
-			car5.body.x = car5.body.x + 2500;
-			car5.body.y -=250;
-			car5.body.velocity.y += 200;
-			if (seventh == 7){
-				car5.kill();
-				}
+			car5.body.y = car.body.y - 900;
+			
+			
 			}
 		
-		car.animations.play('drive');
+		car.animations.play('fly');
        
 		game.physics.arcade.collide(car2, car);
 		game.physics.arcade.collide(car3, car);
 		game.physics.arcade.collide(car5, car);
 		game.physics.arcade.collide(car4, car);
-		game.physics.arcade.collide(car3, car4);
-		game.physics.arcade.collide(car5, car4);
 		
-		if (car.body.velocity.y == 500)
-			{
-				height = false;
-				car.body.velocity.y = 0;
-			}
-		if (height){
-			car.body.velocity.y += 25;
-			
-		}
+		
 		// checking if car is moving left or right, and if the player wants to accellerate
-		if (car.body.velocity.x < 0 && cursors.left.isDown && car.body.velocity.x > -1500){
+		if (car.body.velocity.x < 0 && cursors.left.isDown && car.body.velocity.x > -1800){
 			car.body.velocity.x *= 1.1;
 			if (car.body.velocity.y == 0){
 			}
@@ -172,7 +218,7 @@ window.onload = function() {
 			}
 			}
 		
-		if (car.body.velocity.x > 0 && cursors.right.isDown && car.body.velocity.x < 1500){
+		if (car.body.velocity.x > 0 && cursors.right.isDown && car.body.velocity.x < 1800){
 		car.body.velocity.x *= 1.1;
 		if (car.body.velocity.y == 0){
 		}
@@ -195,32 +241,73 @@ window.onload = function() {
 		
 		if (car2.body.touching.up){
 			car2.loadTexture('carWrecked');
-			carOn = true;
+			//carOn = true;
+			if(!clunk.isPlaying){
+				clunk.play();
+				}
 			}
 		if (car3.body.touching.up){
 			car3.loadTexture('carWrecked');
+			if(!clunk.isPlaying){
+				clunk.play();
+				}
 			carOn = true;
 			}
 		if (car5.body.touching.up){
 			car5.loadTexture('carWrecked');
+			if(!clunk.isPlaying){
+				clunk.play();
+				}
 			carOn = true;
 		}
 		if (car4.body.touching.up){
 			car4.loadTexture('carWrecked');
+			if(!clunk.isPlaying){
+				clunk.play();
+				};
 			carOn = true;
 		}
 		if (carOn){
 			car.body.y -=10;
 			}
 			// starting a jump
-		if (jump.isDown && car.body.onFloor() || jump.isDown && car.body.touching.down)
-    {
-        car.body.velocity.y = -950;
-    }
-		if (!car.body.onFloor()){
-			car.body.velocity.y +=1;
-			if (car.body.velocity.y > 0){
-			car.body.velocity.y *= 1.1;}
-			}
+		if (jump.isDown && cooldown == 0){ //&& car.body.onFloor() || jump.isDown && car.body.touching.down){
+        car.body.velocity.y = -550;
+		if(!vroom.isPlaying){
+		//vroom.play();
 		}
+		doublejump = true;
     }
+		if (cooldown != 0){
+			
+			if (car.body.velocity.y < -2000){
+				car.animations.play('boost');
+				}
+			else{
+				car.animations.play('boost2');
+				}
+			cooldown -= 1;
+			if (cooldown < 10){
+				car.body.velocity.y = -550;
+				}
+			}
+		else{
+			car.animations.play('fly');
+			}
+		if (doublejump && cursors.up.isDown && cooldown == 0){
+			car.body.velocity.y *= 5;
+			car.body.velocity.x *= 1.3;
+			cooldown = 45;
+			doublejump = false;
+			vroom.play();
+		}
+		if (doublejump && cursors.down.isDown && cooldown == 0){
+			car.body.velocity.y *= 9;
+			car.body.velocity.x *= 2;
+			cooldown = 100;
+			doublejump = false;
+			meow.play();
+		}
+		
+		}
+}
