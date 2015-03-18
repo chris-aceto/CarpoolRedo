@@ -168,7 +168,7 @@ window.onload = function() {
 		text = game.add.text( 25, 25, "Fuel:" + fuel);
 		text.fixedToCamera = true;
 		text.inputEnabled = true;
-		controlsText = game.add.text( 1200, 25, "Space: hover \n Up & Space: Boost \n Down & Space: Super Boost" );
+		controlsText = game.add.text( 100, 25, "Space: hover \n Up & Space: Boost \n Down & Space: Super Boost" );
 		controlstext.fixedToCamera = true;
 		controlstext.inputEnabled = true;
     }
@@ -325,7 +325,7 @@ window.onload = function() {
 		
 		
 		// checking if mech is moving left or right, and if the player wants to accellerate
-		if (mech.body.velocity.x < 0 && cursors.left.isDown && mech.body.velocity.x > -800){
+		if (mech.body.velocity.x < 0 && cursors.left.isDown && mech.body.velocity.x > -500){
 			mech.body.velocity.x *= 1.1;
 			if (mech.body.velocity.y == 0){
 			}
@@ -336,7 +336,7 @@ window.onload = function() {
 			}
 			}
 		
-		if (mech.body.velocity.x > 0 && cursors.right.isDown && mech.body.velocity.x < 800){
+		if (mech.body.velocity.x > 0 && cursors.right.isDown && mech.body.velocity.x < 500){
 		mech.body.velocity.x *= 1.1;
 		if (mech.body.velocity.y == 0){
 		}
@@ -393,8 +393,9 @@ window.onload = function() {
 			mech.body.y -=10;
 			}
 			// starting a jump
-		if (jump.isDown && cooldown == 0 && fuel > 0){ //&& mech.body.onFloor() || jump.isDown && mech.body.touching.down){
-        mech.body.velocity.y = -250;
+		if (jump.isDown && cooldown == 0){ //&& mech.body.onFloor() || jump.isDown && mech.body.touching.down){
+        //mech.body.velocity.y = -250;
+		mech.body.velocity.y = -5;
 		if(!vroom.isPlaying){
 		//vroom.play();
 		}
@@ -414,17 +415,20 @@ window.onload = function() {
 		else{
 			mech.animations.play('fly');
 			}
-		if (doublejump && cursors.up.isDown && cooldown == 0 && fuel > 20){
+			//BOOST
+		if (doublejump && cursors.up.isDown && cooldown == 0 ){
 			fuel -= 30;
+			mech.body.velocity.y -= 200;
 			mech.body.velocity.y *= 5;
 			mech.body.velocity.x *= 1.3;
 			cooldown = 25;
 			doublejump = false;
 			vroom.play();
 		}
-		if (doublejump && cursors.down.isDown && cooldown == 0 && fuel > 20){
+		if (doublejump && cursors.down.isDown && cooldown == 0){
 			fuel -= 50;
-			mech.body.velocity.y *= 10;
+			mech.body.velocity.y -= 250;
+			mech.body.velocity.y *= 6;
 			mech.body.velocity.x *= 2;
 			cooldown = 60;
 			doublejump = false;
