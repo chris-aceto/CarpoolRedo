@@ -15,11 +15,16 @@ window.onload = function() {
 		game.load.audio('victory', 'assets/victory.ogg');
 		game.load.audio('lose', 'assets/lose.ogg');
 		game.load.audio('meow','assets/meow.ogg');
-		game.load.spritesheet('cats', 'assets/catsheet3.png', 362, 400);
+		game.load.spritesheet('cats', 'assets/catmech.png', 545, 600);
 		game.load.audio('pew','assets/pew.ogg');
+		game.load.image('tiles', 'assets/tiles.png');
+		game.load.spritesheet('tiles2', 'assets/tiles2.png');
+		game.load.audio('ow','assets/ow.ogg');
+		game.load.spritesheet('laser','assets/laser.png',400,400);
     }
     
 	//VARS
+	var ow;
 	var pew;
 	var shootR;
 	var shootL;
@@ -68,17 +73,28 @@ window.onload = function() {
 	var shooting = false;
 	var proj;
 	var projpos = 0;
+	var timer2 = 0;
+	var timer3 = 0;
+	var timer4 = 0;
+	var timer5 = 0;
     function create() {
 	 game.physics.startSystem(Phaser.Physics.ARCADE);
 	 //game.physics.startSystem(Phaser.Physics.P2JS);
-		bg = game.add.tileSprite(0, 0, 12000, 10000, 'bg');
-		//bg.fixedToCamera=true;
-		road = game.add.tileSprite(0, 0, 1200, 10000, 'road');
-		level = game.add.tilemap('level');//,16,16);//,game.world.centerX,game.world.centerY);
-		level.addTilesetImage('phonesprite');
+		bg = game.add.tileSprite(0, 0, 12000, 10000, 'tiles');
+		bg.fixedToCamera=true;
+		road = game.add.tileSprite(0, 0, 12000, 10000, 'road');
+		
+		//game.world.setBounds(0, 0, 2400, 12000);
+		level = game.add.tilemap('level',45,45,50,50);//,16,16);//,game.world.centerX,game.world.centerY);
+		
 		//level.setCollisionBetween(1,51 );
 		level.setCollision(50,level);
 		layer = level.createLayer(0);
+		layer.resizeWorld();
+		level.addTilesetImage(level,'bg',1,1,0,0,0);
+		level.addTilesetImage(layer,'tiles2',45,45,0,0,50);
+		//level.animations.add('tilemove',[0,1],4);
+		//level.animations.play('tilemove');
 		//layer.width = 2000;
 		
 		//level.setCollision(50,0);
@@ -86,11 +102,19 @@ window.onload = function() {
 		
 		//layer.debug = true;
 		//game.physics.arcade.convertTilemap(level, layer);
-		game.world.setBounds(0, 0, 2400, 12000);
-        // Create a sprite at the center of the screen using the 'mechsprite' image.
+		
+		//PROJECTILE
+		proj = game.add.sprite(0,0,'laser');
+		game.physics.enable( proj, Phaser.Physics.ARCADE );
+		proj.width = 50;
+		proj.height = 50;
+		proj.exists = false;
+		
+		
+        // MECH
         mech = game.add.sprite( game.world.centerX - 800 , 0, 'cats' );
-		mech.width = 130;
-		mech.height = 130;
+		mech.width = 190;
+		mech.height = 190;
 		//mech.body.x = -10000;
         // so it will be truly centered.
 		//mech.animations.add('phonesprite', true);
@@ -103,36 +127,37 @@ window.onload = function() {
 		
 		game.physics.arcade.gravity.y = 2050;
 		
-		mech.animations.add('fly', [0,1,2],7,true);
-		mech.animations.add('boost',[3,4],7, true);
-		mech.animations.add('boost2',[4],7, true);
+		mech.animations.add('stand',[0]);
+		mech.animations.add('hover', [1,2],7,true);
+		mech.animations.add('boost',[3,4],10, true);
+		mech.animations.add('boost2',[5,6],12, true);
 		
 		
 		
 		
-		// creating npc phones
-		phone2 = game.add.sprite( mech.body.x - 1000, 0, 'phonesprite' );
+		//PHONES
+		phone2 = game.add.sprite( mech.body.x - 1000, -1000, 'phonesprite' );
 		game.physics.enable( phone2, Phaser.Physics.ARCADE );
 		phone2.body.collideWorldBounds = true;
 		phone2.anchor.setTo( 0, -2 );
 		phone2.width = 100;
 		phone2.height = 200;
 		
-		phone3 = game.add.sprite( mech.body.x + 1000, 0, 'phonesprite' );
+		phone3 = game.add.sprite( mech.body.x + 1000, -1000, 'phonesprite' );
 		game.physics.enable( phone3, Phaser.Physics.ARCADE );
 		phone3.body.collideWorldBounds = true;
 		phone3.anchor.setTo( 0, -2 );
 		phone3.width = 100;
 		phone3.height = 200;
 		
-		phone4 = game.add.sprite( mech.body.x + 500, 0, 'phonesprite' );
+		phone4 = game.add.sprite( mech.body.x + 500, -1000, 'phonesprite' );
 		game.physics.enable( phone4, Phaser.Physics.ARCADE );
 		phone4.body.collideWorldBounds = true;
 		phone4.anchor.setTo( 0, -2 );
 		phone4.width = 100;
 		phone4.height = 200;
 		
-		phone5 = game.add.sprite( mech.body.x - 500, 0, 'phonesprite' );
+		phone5 = game.add.sprite( mech.body.x - 500, -1000, 'phonesprite' );
 		game.physics.enable( phone5, Phaser.Physics.ARCADE );
 		phone5.body.collideWorldBounds = true;
 		phone5.anchor.setTo( 0, -2 );
@@ -156,6 +181,7 @@ window.onload = function() {
 		win = game.add.audio('victory',3);
 		lose = game.add.audio('lose');
 		meow = game.add.audio('meow');
+		ow = game.add.audio('ow');
 		music.play();
 		//CONTROLS
 		
@@ -178,14 +204,10 @@ window.onload = function() {
 		phone4.animations.add('die',[3,4],3,true);
 		phone3.animations.add('die',[3,4],3,true);
 		phone5.animations.add('die',[3,4],3,true);
+		proj.animations.add('laser',[0,1],20,true);
 		game.camera.follow(mech);
 		
-		//PROJECTILE
-		proj = game.add.sprite(0,0,'phonesprite');
-		game.physics.enable( proj, Phaser.Physics.ARCADE );
-		proj.width = 50;
-		proj.height = 50;
-		proj.exists = false;
+		
 		
 		//TEXT
 		text = game.add.text( 25, 25, "Fuel:" + fuel);
@@ -197,10 +219,41 @@ window.onload = function() {
     }
     
     function update() {
-	updateText();
+	road.x -= 1;
+	//ANIMATION START
+		if (jump.isDown && cooldown == 0){
+			mech.animations.play('hover');
+			}
+		else if (cooldown == 0){
+			mech.animations.play('stand');
+			}
+		if (shooting){
+			proj.animations.play('laser');
+			}
+		updateText();
+	
 		//COLLISION
 		//PHONE DEATH
-		
+		timer2 -=1;
+		if (killed2 && timer2 == 0){
+			killed2 = false;
+			phone2.body.y -= 1000;
+			}
+		timer3 -=1;
+		if (killed3 && timer3 == 0){
+			killed3 = false;
+			phone3.body.y -= 1000;
+			}
+		timer4 -=1;
+		if (killed4 && timer4 == 0){
+			killed4 = false;
+			phone4.body.y -= 1000;
+			}
+		timer5 -=1;
+		if (killed5 && timer5 == 0){
+			killed5 = false;
+			phone5.body.y -= 1000;
+			}
 		if ( !killed2){
 		phone2.animations.play('walk');
 		//game.physics.arcade.collide(proj, phone2)
@@ -224,34 +277,39 @@ window.onload = function() {
 		game.physics.arcade.collide(phone4, layer);
 		game.physics.arcade.collide(phone5, layer);
 		
-		game.physics.arcade.collide(phone3, mech);
-		game.physics.arcade.collide(phone4, mech);
-		game.physics.arcade.collide(phone5, mech);
 		
 		
 			if (!killed2 && game.physics.arcade.collide(proj, phone2)){
 			shooting = false;
 			proj.exists = false;
 			killed2 = true;
+			timer2 = 80;
 			phone2.animations.play('die');
+			ow.play();
 			}
 			if (!killed3 && game.physics.arcade.collide(proj, phone3)){
 			shooting = false;
 			proj.exists = false;
 			killed3 = true;
+			timer3 = 80;
 			phone3.animations.play('die');
+			ow.play();
 			}
 			if (!killed4 && game.physics.arcade.collide(proj, phone4)){
 			shooting = false;
 			proj.exists = false;
 			killed4 = true;
+			timer4 = 80;
 			phone4.animations.play('die');
+			ow.play();
 			}
 			if (!killed5 && game.physics.arcade.collide(proj, phone5)){
 			shooting = false;
 			proj.exists = false;
 			killed5 = true;
+			timer5 = 80;
 			phone5.animations.play('die');
+			ow.play();
 			}
 		
 		if (!killed2 ){
@@ -433,22 +491,24 @@ window.onload = function() {
 		if (shootR.isDown && !shooting){
 			proj.exists = true;
 			proj.body.x = mech.body.x;
-			proj.body.y = mech.body.y;
+			proj.body.y = mech.body.y + 50;
 			proj.body.velocity.y = 0;
 			proj.body.velocity.x = 1000;
 			projpos = proj.body.x;
 			shooting = true;
+			proj.animations.play('laser');
 			pew.play();
 			}
 		if (shootL.isDown && !shooting){
 			proj.exists = true;
 			proj.body.x = mech.body.x;
-			proj.body.y = mech.body.y;
+			proj.body.y = mech.body.y + 50;
 			proj.body.velocity.y = 0;
 			proj.body.velocity.x = -1000;
 			projpos = proj.body.x;
 			shooting = true;
 			pew.play();
+			proj.animations.play('laser');
 			}
 			// JUMP
 		if (jump.isDown && cooldown == 0){ //&& mech.body.onFloor() || jump.isDown && mech.body.touching.down){
@@ -460,18 +520,8 @@ window.onload = function() {
 		doublejump = true;
     }
 		if (cooldown != 0){
-			
-			if (mech.body.velocity.y < -2000){
-				mech.animations.play('boost');
-				}
-			else{
-				mech.animations.play('boost2');
-				}
 			cooldown -= 1;
 			
-			}
-		else{
-			mech.animations.play('fly');
 			}
 			//BOOST
 		if (doublejump && cursors.up.isDown && cooldown == 0 ){
@@ -482,6 +532,7 @@ window.onload = function() {
 			cooldown = 25;
 			doublejump = false;
 			vroom.play();
+			mech.animations.play('boost');
 		}
 		if (doublejump && cursors.down.isDown && cooldown == 0){
 			fuel -= 50;
@@ -491,6 +542,7 @@ window.onload = function() {
 			cooldown = 60;
 			doublejump = false;
 			meow.play();
+			mech.animations.play('boost2');
 		}
 		if ( mech.body.velocity.y >-1 && fuel < 99){
 			fuel+=1;
