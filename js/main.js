@@ -210,12 +210,12 @@ window.onload = function() {
 		
 		
 		//TEXT
-		text = game.add.text( 25, 25, "Fuel:" + fuel);
-		text.fixedToCamera = true;
-		text.inputEnabled = true;
-		controlsText = game.add.text( 25, 100, "Space: hover \n Up & Space: Boost \n Down & Space: Super Boost" );
-		controlstext.fixedToCamera = true;
-		controlstext.inputEnabled = true;
+		//text = game.add.text( 25, 25, "Fuel:" + fuel);
+		//text.fixedToCamera = true;
+		//text.inputEnabled = true;
+		//controlsText = game.add.text( 25, 100, "Space: hover \n Up & Space: Boost \n Down & Space: Super Boost" );
+		//controlstext.fixedToCamera = true;
+		//controlstext.inputEnabled = true;
     }
     
     function update() {
@@ -230,7 +230,7 @@ window.onload = function() {
 		if (shooting){
 			proj.animations.play('laser');
 			}
-		updateText();
+		//updateText();
 	
 		//COLLISION
 		//PHONE DEATH
@@ -484,7 +484,7 @@ window.onload = function() {
 			}
 		//SHOOTING
 		
-		if (shooting && (projpos < proj.body.x - 700 || projpos > proj.body.x + 700)){
+		if (shooting && (projpos < proj.body.x - 600 || projpos > proj.body.x + 600)){
 			shooting = false;
 			proj.exists = false;
 			}
@@ -552,8 +552,8 @@ window.onload = function() {
 			}
 		
 		}
-		function updateText(){
-			text.setText ("Fuel:" + fuel );
+		//function updateText(){
+		//	text.setText ("Fuel:" + fuel );
 			
-			}
+		//	}
 }
