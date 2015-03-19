@@ -16,8 +16,14 @@ window.onload = function() {
 		game.load.audio('lose', 'assets/lose.ogg');
 		game.load.audio('meow','assets/meow.ogg');
 		game.load.spritesheet('cats', 'assets/catsheet3.png', 362, 400);
+		game.load.audio('pew','assets/pew.ogg');
     }
     
+	//VARS
+	var pew;
+	var shootR;
+	var shootL;
+	var slash;
 	var win;
 	var music;
 	var vroom;
@@ -57,8 +63,11 @@ window.onload = function() {
 	var controlstext;
 	var velo2 = 110;
 	var velo3 = 110;
-	var velo4 = 110;
-	var velo5 = 110;
+	var velo4 = 210;
+	var velo5 = 310;
+	var shooting = false;
+	var proj;
+	var projpos = 0;
     function create() {
 	 game.physics.startSystem(Phaser.Physics.ARCADE);
 	 //game.physics.startSystem(Phaser.Physics.P2JS);
@@ -138,7 +147,9 @@ window.onload = function() {
 		//phone4.body.immovable= true;
 		//phone5.body.immovable= true;
 		
-		
+		//AUDIO
+		pew = game.add.audio('pew');
+		pew.allowMultiple = true;
 		clunk = game.add.audio('clunk');
 		vroom = game.add.audio('vroom');
 		music = game.add.audio('music',true);
@@ -146,13 +157,19 @@ window.onload = function() {
 		lose = game.add.audio('lose');
 		meow = game.add.audio('meow');
 		music.play();
+		//CONTROLS
+		
 		cursors = game.input.keyboard.createCursorKeys();
 		jump = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+		shootR = game.input.keyboard.addKey(Phaser.Keyboard.D);
+		shootL = game.input.keyboard.addKey(Phaser.Keyboard.A);
+		slash = game.input.keyboard.addKey(Phaser.Keyboard.W);
 		//game.camera.follow(mech);
 		//phone5.kill();
 		//phone4.kill();
 		//phone2.kill();
 		//phone3.kill();
+		//ANIMATIONS
 		phone2.animations.add('walk',[0,1,2],3,true);
 		phone4.animations.add('walk',[0,1,2],3,true);
 		phone3.animations.add('walk',[0,1,2],3,true);
@@ -163,12 +180,18 @@ window.onload = function() {
 		phone5.animations.add('die',[3,4],3,true);
 		game.camera.follow(mech);
 		
+		//PROJECTILE
+		proj = game.add.sprite(0,0,'phonesprite');
+		game.physics.enable( proj, Phaser.Physics.ARCADE );
+		proj.width = 50;
+		proj.height = 50;
+		proj.exists = false;
 		
 		//TEXT
 		text = game.add.text( 25, 25, "Fuel:" + fuel);
 		text.fixedToCamera = true;
 		text.inputEnabled = true;
-		controlsText = game.add.text( 100, 25, "Space: hover \n Up & Space: Boost \n Down & Space: Super Boost" );
+		controlsText = game.add.text( 25, 100, "Space: hover \n Up & Space: Boost \n Down & Space: Super Boost" );
 		controlstext.fixedToCamera = true;
 		controlstext.inputEnabled = true;
     }
@@ -176,14 +199,65 @@ window.onload = function() {
     function update() {
 	updateText();
 		//COLLISION
+		//PHONE DEATH
+		
+		if ( !killed2){
+		phone2.animations.play('walk');
+		//game.physics.arcade.collide(proj, phone2)
+		game.physics.arcade.collide(phone2, mech);
+		}
+		if ( !killed3){
+		phone3.animations.play('walk');
+		//game.physics.arcade.collide(proj, phone3)
+		}
+		if ( !killed4){
+		phone4.animations.play('walk');
+		//game.physics.arcade.collide(proj, phone4)
+		}
+		if ( !killed5){
+		phone5.animations.play('walk');
+		//game.physics.arcade.collide(proj, phone5)
+		}
 		game.physics.arcade.collide(mech, layer);
 		game.physics.arcade.collide(phone2, layer);
 		game.physics.arcade.collide(phone3, layer);
 		game.physics.arcade.collide(phone4, layer);
 		game.physics.arcade.collide(phone5, layer);
-		if (!killed2){
+		
+		game.physics.arcade.collide(phone3, mech);
+		game.physics.arcade.collide(phone4, mech);
+		game.physics.arcade.collide(phone5, mech);
+		
+		
+			if (!killed2 && game.physics.arcade.collide(proj, phone2)){
+			shooting = false;
+			proj.exists = false;
+			killed2 = true;
+			phone2.animations.play('die');
+			}
+			if (!killed3 && game.physics.arcade.collide(proj, phone3)){
+			shooting = false;
+			proj.exists = false;
+			killed3 = true;
+			phone3.animations.play('die');
+			}
+			if (!killed4 && game.physics.arcade.collide(proj, phone4)){
+			shooting = false;
+			proj.exists = false;
+			killed4 = true;
+			phone4.animations.play('die');
+			}
+			if (!killed5 && game.physics.arcade.collide(proj, phone5)){
+			shooting = false;
+			proj.exists = false;
+			killed5 = true;
+			phone5.animations.play('die');
+			}
+		
+		if (!killed2 ){
 			game.physics.arcade.collide(phone2, mech);
 		}
+		
 		if (!killed3){
 			game.physics.arcade.collide(phone3, mech);
 		}
@@ -195,10 +269,10 @@ window.onload = function() {
 		}
 	//PHONE VELOCITY CONTROL
 	if (phone2.body.blocked.left){
-		velo2 =500;
+		velo2 =200;
 		}
 	else if (phone2.body.blocked.right){
-		velo2 = -500;
+		velo2 = -200;
 		}
 		if (phone3.body.blocked.left){
 		velo3 = 500;
@@ -213,33 +287,17 @@ window.onload = function() {
 		velo4 = -500;
 		}
 		if (phone5.body.blocked.left){
-		velo5 = 500;
+		velo5 = 700;
 		}
 	else if (phone5.body.blocked.right){
-		velo5 = -500;
+		velo5 = -700;
 		}
 		phone2.body.velocity.x = velo2;
 		phone3.body.velocity.x = velo3;
 		phone4.body.velocity.x = velo4;
 		phone5.body.velocity.x = velo5;
 		
-		//PHONE DEATH
-	if ( !killed2){
-		phone2.animations.play('walk');
-		
-		}
-	if ( !killed3){
-		phone3.animations.play('walk');
-		
-		}
-	if ( !killed4){
-		phone4.animations.play('walk');
-		
-		}
-	if ( !killed5){
-		phone5.animations.play('walk');
-		
-		}	
+			
 	
 	//	bug fix
 		if (tenth > 4){
@@ -291,33 +349,7 @@ window.onload = function() {
 			//phone5.kill();
 			}
 		//reuse mechs
-		if (mech.body.y < phone2.body.y - 2500 || mech.body.y > phone2.body.y + 1500){
-			phone2.animations.play('die');
-			
-			phone2.body.y = mech.body.y - 600;
-			
-			}
-		if (mech.body.y < phone3.body.y - 2500 || mech.body.y > phone3.body.y + 1500){
-		phone3.animations.play('walk');
-			phone3.body.y = mech.body.y - 600 ;
-			
-			
-			}
-		if (mech.body.y < phone4.body.y - 2500 || mech.body.y > phone4.body.y + 1500){
-		phone4.animations.play('walk');
-			phone4.body.y = mech.body.y- 800 ;
-			count +=1;
-			tenth+=1;
-			
-			
-			
-			}
-		if (mech.body.y < phone5.body.y - 2500 || mech.body.y > phone5.body.y + 1500){
-		phone5.animations.play('walk');
-			phone5.body.y = mech.body.y - 900;
-			
-			
-			}
+		
 		
 		mech.animations.play('fly');
        
@@ -358,32 +390,32 @@ window.onload = function() {
 		}
 		//PHONE DAMAGE
 		if (phone2.body.touching.up){
-			phone2.animations.play('die');
+			//phone2.animations.play('die');
 			//mechOn = true;
-			killed2 = true;
+			//killed2 = true;
 			if(!clunk.isPlaying){
 				clunk.play();
 				}
 			}
 		if (phone3.body.touching.up){
-			phone3.animations.play('die');
-			killed3 = true;
+			//phone3.animations.play('die');
+			//killed3 = true;
 			if(!clunk.isPlaying){
 				clunk.play();
 				}
 			mechOn = true;
 			}
 		if (phone5.body.touching.up){
-			phone5.animations.play('die');
-			killed5 = true;
+			//phone5.animations.play('die');
+			//killed5 = true;
 			if(!clunk.isPlaying){
 				clunk.play();
 				}
 			mechOn = true;
 		}
 		if (phone4.body.touching.up){
-			phone4.animations.play('die');
-			killed4 = true;
+			//phone4.animations.play('die');
+			//killed4 = true;
 			if(!clunk.isPlaying){
 				clunk.play();
 				};
@@ -392,7 +424,33 @@ window.onload = function() {
 		if (mechOn){
 			mech.body.y -=10;
 			}
-			// starting a jump
+		//SHOOTING
+		
+		if (shooting && (projpos < proj.body.x - 700 || projpos > proj.body.x + 700)){
+			shooting = false;
+			proj.exists = false;
+			}
+		if (shootR.isDown && !shooting){
+			proj.exists = true;
+			proj.body.x = mech.body.x;
+			proj.body.y = mech.body.y;
+			proj.body.velocity.y = 0;
+			proj.body.velocity.x = 1000;
+			projpos = proj.body.x;
+			shooting = true;
+			pew.play();
+			}
+		if (shootL.isDown && !shooting){
+			proj.exists = true;
+			proj.body.x = mech.body.x;
+			proj.body.y = mech.body.y;
+			proj.body.velocity.y = 0;
+			proj.body.velocity.x = -1000;
+			projpos = proj.body.x;
+			shooting = true;
+			pew.play();
+			}
+			// JUMP
 		if (jump.isDown && cooldown == 0){ //&& mech.body.onFloor() || jump.isDown && mech.body.touching.down){
         //mech.body.velocity.y = -250;
 		mech.body.velocity.y = -5;
