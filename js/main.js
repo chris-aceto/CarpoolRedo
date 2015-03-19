@@ -415,7 +415,8 @@ window.onload = function() {
 		
 		
 		// checking if mech is moving left or right, and if the player wants to accellerate
-		if (mech.body.velocity.x < 0 && cursors.left.isDown && mech.body.velocity.x > -500){
+		if (mech.body.velocity.x < 0 && cursors.left.isDown && mech.body.velocity.x > -900 && jump.isDown
+		|| mech.body.velocity.x < 0 && cursors.left.isDown && mech.body.velocity.x > -300){
 			mech.body.velocity.x *= 1.1;
 			if (mech.body.velocity.y == 0){
 			}
@@ -426,7 +427,8 @@ window.onload = function() {
 			}
 			}
 		
-		if (mech.body.velocity.x > 0 && cursors.right.isDown && mech.body.velocity.x < 500){
+		if (mech.body.velocity.x > 0 && cursors.right.isDown && mech.body.velocity.x < 900 && jump.isDown
+		|| mech.body.velocity.x > 0 && cursors.right.isDown && mech.body.velocity.x < 300){
 		mech.body.velocity.x *= 1.1;
 		if (mech.body.velocity.y == 0){
 		}
