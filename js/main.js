@@ -563,7 +563,7 @@ window.onload = function() {
 			}
 		//SHOOTING
 		
-		if (shooting && (projpos < proj.body.x - 600 || projpos > proj.body.x + 600)){
+		if (shooting && (mech.body.x < proj.body.x - 600 || mech.body.x > proj.body.x + 600) || projpos < proj.body.y -500){
 			shooting = false;
 			proj.exists = false;
 			}
@@ -572,8 +572,8 @@ window.onload = function() {
 			proj.body.x = mech.body.x;
 			proj.body.y = mech.body.y + 50;
 			proj.body.velocity.y = 0;
-			proj.body.velocity.x = 1000;
-			projpos = proj.body.x;
+			proj.body.velocity.x = mech.body.velocity.x + 2000;
+			projpos = proj.body.y;
 			shooting = true;
 			proj.animations.play('laser');
 			pew.play();
@@ -583,7 +583,7 @@ window.onload = function() {
 			proj.body.x = mech.body.x;
 			proj.body.y = mech.body.y + 50;
 			proj.body.velocity.y = 0;
-			proj.body.velocity.x = -1000;
+			proj.body.velocity.x = mech.body.velocity.x - 2000;
 			projpos = proj.body.x;
 			shooting = true;
 			pew.play();
