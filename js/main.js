@@ -563,7 +563,7 @@ window.onload = function() {
 			}
 		//SHOOTING
 		
-		if (shooting && (mech.body.x < proj.body.x - 600 || mech.body.x > proj.body.x + 600) || projpos < proj.body.y -500){
+		if (shooting && (mech.body.x < proj.body.x - 600 || mech.body.x > proj.body.x + 600) || projpos < proj.body.y -250){
 			shooting = false;
 			proj.exists = false;
 			}
@@ -633,7 +633,7 @@ window.onload = function() {
 			vroom.play();
 			mech.animations.play('boost');
 		}
-		if ( S.isDown && cooldown == 0){
+		if ( cursors.down.isDown && cooldown == 0){
 			fuel -= 50;
 			mech.body.velocity.y = -250;
 			mech.body.velocity.y *= 8;
@@ -646,7 +646,7 @@ window.onload = function() {
 		if (dashing){
 			mech.body.velocity.y = -35;
 			}
-		if ( cursors.down.isDown && cooldown == 0){
+		if ( S.isDown && cooldown == 0){
 			fuel -= 50;
 			
 			if (mech.body.velocity.x > 0){
