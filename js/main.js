@@ -283,20 +283,15 @@ window.onload = function() {
 			}
 		if ( !killed2){
 		phone2.animations.play('walk');
-		//game.physics.arcade.collide(proj, phone2)
-		game.physics.arcade.collide(proj, phone2);
 		}
 		if ( !killed3){
 		phone3.animations.play('walk');
-		game.physics.arcade.collide(proj, phone3)
 		}
 		if ( !killed4){
 		phone4.animations.play('walk');
-		game.physics.arcade.collide(proj, phone4)
 		}
 		if ( !killed5){
 		phone5.animations.play('walk');
-		game.physics.arcade.collide(proj, phone5)
 		}
 		if(!dashing){game.physics.arcade.collide(mech, layer);}
 		game.physics.arcade.collide(phone2, layer);
@@ -642,9 +637,10 @@ window.onload = function() {
 			doublejump = false;
 			meow.play();
 			mech.animations.play('boost2');
+			dashing = true;
 		}
 		if (dashing){
-			mech.body.velocity.y = -35;
+			mech.body.velocity.y -= 35;
 			}
 		if ( S.isDown && cooldown == 0){
 			fuel -= 50;
