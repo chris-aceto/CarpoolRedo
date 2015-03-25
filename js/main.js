@@ -10,7 +10,7 @@ window.onload = function() {
 		game.load.image( 'bg', 'assets/BG3.png' );
 		game.load.image( 'road', 'assets/clouds2.png' )
 		game.load.audio('clunk', 'assets/clunk.ogg');
-		game.load.audio('music', 'assets/gargos.mp3');
+		game.load.audio('music', 'assets/12-tripod.ogg');
 		game.load.audio('vroom', 'assets/vroom.ogg');
 		game.load.audio('victory', 'assets/victory.ogg');
 		game.load.audio('lose', 'assets/lose.ogg');
@@ -92,6 +92,10 @@ window.onload = function() {
 	var shootL;
 	var shootW;
 	var splode;
+	var superboostUp;
+	var superboostD;
+	var superboostL;
+	var superboostR;
     function create() {
 	 game.physics.startSystem(Phaser.Physics.ARCADE);
 	 //game.physics.startSystem(Phaser.Physics.P2JS);
@@ -214,9 +218,13 @@ window.onload = function() {
 		boostR = game.input.keyboard.addKey(Phaser.Keyboard.D);
 		boostL = game.input.keyboard.addKey(Phaser.Keyboard.A);
 		boostUp = game.input.keyboard.addKey(Phaser.Keyboard.W);
-		shootR = game.input.keyboard.addKey(Phaser.Keyboard.L);
-		shootL = game.input.keyboard.addKey(Phaser.Keyboard.J);
-		shootW = game.input.keyboard.addKey(Phaser.Keyboard.I);
+		shootR = game.input.keyboard.addKey(Phaser.Keyboard.O);
+		shootL = game.input.keyboard.addKey(Phaser.Keyboard.U);
+		shootW = game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
+		superboostUp = game.input.keyboard.addKey(Phaser.Keyboard.I);
+		superboostR = game.input.keyboard.addKey(Phaser.Keyboard.L);
+		superboostL = game.input.keyboard.addKey(Phaser.Keyboard.J);
+		superboostD = game.input.keyboard.addKey(Phaser.Keyboard.K);
 		S = game.input.keyboard.addKey(Phaser.Keyboard.S);
 		Fbomb = game.input.keyboard.addKey(Phaser.Keyboard.F);
 		//game.camera.follow(mech);
@@ -626,11 +634,10 @@ window.onload = function() {
 			vroom.play();
 			mech.animations.play('boost');
 		}
-		if ( cursors.up.isDown ){
+		if ( superboostUp.isDown){
 			fuel -= 50;
 			mech.body.velocity.y = -350;
 			mech.body.velocity.y *= 7;
-			mech.body.velocity.x *= 2;
 			cooldown = 40;
 			doublejump = false;
 			meow.play();
@@ -638,11 +645,10 @@ window.onload = function() {
 			dashing = true;
 			boosting = true;
 		}
-		if ( cursors.down.isDown ){
+		if ( superboostD.isDown  ){
 			fuel -= 50;
 			mech.body.velocity.y = 350;
 			mech.body.velocity.y *= 7;
-			mech.body.velocity.x *= 2;
 			cooldown = 40;
 			doublejump = false;
 			meow.play();
@@ -657,14 +663,14 @@ window.onload = function() {
 			}
 			}
 		if (  cooldown == 0){
-			if (cursors.right.isDown){
+			if (superboostR.isDown ){
 				mech.body.velocity.x = 4000;
 				dashing = true;
 				cooldown = 20;
 				meow.play();
 				mech.animations.play('boost2');
 				}
-			else if (cursors.left.isDown){
+			else if (superboostL.isDown ){
 				mech.body.velocity.x = -4000;
 				dashing = true;
 				cooldown = 20;
@@ -672,6 +678,7 @@ window.onload = function() {
 				mech.animations.play('boost2');
 				}
 			}
+		
 		}
 		//function makePhone(x,y){
 		//	var phone;
