@@ -112,7 +112,7 @@ window.onload = function() {
 		layer = level.createLayer(0);
 		layer.resizeWorld();
 		level.addTilesetImage(level,'bg',1,1,0,0,0);
-		level.addTilesetImage(layer,'tiles2',45,45,0,0,25);
+		level.addTilesetImage(layer,'tiles2',45,45,0,0,50);
 		level.addTilesetImage(layer,'tiles3',45,45,0,0,50);
 		//level.animations.add('tilemove',[0,1],4);
 		//level.animations.play('tilemove');
