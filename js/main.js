@@ -17,8 +17,9 @@ window.onload = function() {
 		game.load.audio('meow','assets/meow.ogg');
 		game.load.spritesheet('cats', 'assets/catmechdrill.png', 545, 600);
 		game.load.audio('pew','assets/pew.ogg');
-		game.load.image('tiles', 'assets/tiles.png');
-		game.load.spritesheet('tiles2', 'assets/tiles2.png');
+		game.load.image('tiles', 'assets/tilesB.png');
+		game.load.spritesheet('tiles2', 'assets/tiles2B.png');
+		game.load.spritesheet('tiles3', 'assets/tiles3B.png');
 		game.load.audio('ow','assets/ow.ogg');
 		game.load.spritesheet('laser','assets/laser.png',400,400);
 		game.load.audio('kshhh', 'assets/kshhh.ogg');
@@ -111,7 +112,8 @@ window.onload = function() {
 		layer = level.createLayer(0);
 		layer.resizeWorld();
 		level.addTilesetImage(level,'bg',1,1,0,0,0);
-		level.addTilesetImage(layer,'tiles2',45,45,0,0,50);
+		level.addTilesetImage(layer,'tiles2',45,45,0,0,25);
+		level.addTilesetImage(layer,'tiles3',45,45,0,0,50);
 		//level.animations.add('tilemove',[0,1],4);
 		//level.animations.play('tilemove');
 		//layer.width = 2000;
