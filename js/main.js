@@ -6,7 +6,7 @@ window.onload = function() {
     
     function preload() {
 		game.load.spritesheet( 'phonesprite', 'assets/phone.png', 200,343 );
-		game.load.tilemap( 'level', 'assets/mylevel4.csv', null, Phaser.Tilemap.CSV );
+		game.load.tilemap( 'level', 'assets/mylevel5.csv', null, Phaser.Tilemap.CSV );
 		game.load.image( 'bg', 'assets/BG3.png' );
 		game.load.image( 'road', 'assets/clouds2.png' )
 		game.load.audio('clunk', 'assets/clunk.ogg');
@@ -112,8 +112,8 @@ window.onload = function() {
 		layer = level.createLayer(0);
 		layer.resizeWorld();
 		level.addTilesetImage(level,'bg',1,1,0,0,0);
-		level.addTilesetImage(layer,'tiles2',45,45,0,0,50);
-		level.addTilesetImage(layer,'tiles3',45,45,0,0,25);
+		level.addTilesetImage(layer,'tiles2',45,45,0,0,25);
+		level.addTilesetImage(layer,'tiles3',45,45,0,0,50);
 		//level.animations.add('tilemove',[0,1],4);
 		//level.animations.play('tilemove');
 		//layer.width = 2000;
