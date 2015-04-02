@@ -19,7 +19,7 @@ window.onload = function() {
 		game.load.audio('pew','assets/pew.ogg');
 		game.load.image('tiles', 'assets/tilesB.png');
 		game.load.spritesheet('tiles2', 'assets/tiles2B.png');
-		game.load.spritesheet('tiles3', 'assets/tiles3B.png');
+		game.load.spritesheet('tiles3', 'assets/tiles3Bn.png');
 		game.load.audio('ow','assets/ow.ogg');
 		game.load.spritesheet('laser','assets/laser.png',400,400);
 		game.load.audio('kshhh', 'assets/kshhh.ogg');
