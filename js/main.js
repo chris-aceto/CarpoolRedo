@@ -10,12 +10,12 @@ window.onload = function() {
 		game.load.image( 'bg', 'assets/BG3.png' );
 		game.load.image( 'road', 'assets/clouds2.png' )
 		game.load.audio('clunk', 'assets/clunk.ogg');
-		game.load.audio('music', 'assets/12-tripod.ogg');
+		game.load.audio('music', 'assets/choose-a-file2.ogg');
 		game.load.audio('vroom', 'assets/vroom.ogg');
 		game.load.audio('victory', 'assets/victory.ogg');
 		game.load.audio('lose', 'assets/lose.ogg');
 		game.load.audio('meow','assets/meow.ogg');
-		game.load.spritesheet('cats', 'assets/catmech.png', 545, 600);
+		game.load.spritesheet('cats', 'assets/catmechdrill.png', 545, 600);
 		game.load.audio('pew','assets/pew.ogg');
 		game.load.image('tiles', 'assets/tiles.png');
 		game.load.spritesheet('tiles2', 'assets/tiles2.png');
@@ -203,7 +203,7 @@ window.onload = function() {
 		pew.allowMultiple = true;
 		clunk = game.add.audio('clunk',0.2);
 		vroom = game.add.audio('vroom',0.25);
-		music = game.add.audio('music',0.2,true );
+		music = game.add.audio('music',0.5,true );
 		win = game.add.audio('victory',3);
 		lose = game.add.audio('lose');
 		meow = game.add.audio('meow',0.15);
@@ -274,11 +274,12 @@ window.onload = function() {
 		ow.play();
 		ow.play();
 		}
+	//SPRITE MOVEMENT
 	wave.body.velocity.x = mech.body.velocity.x + 2000;
-	if (boostL.isDown){
+	if (mech.body.velocity.x < 0){
 		mech.scale.x = -.35;
 		}
-	if (boostR.isDown){
+	if (mech.body.velocity.x > 0){
 		mech.scale.x = .35;
 		}
 	if (jump.isDown && !kshhh.isPlaying){
@@ -286,6 +287,30 @@ window.onload = function() {
 		}
 	else if(!jump.isDown){
 		kshhh.stop();
+		}
+		
+	//Rotation
+	if (boosting && mech.body.velocity.y < 0){
+		//mech.body.polygon.rotate angle*Math.PI/180;
+		if (mech.scale.x > -0.1){
+			mech.rotation = -90;
+			}
+		else{
+			mech.rotation = 90;
+			}
+		}
+	else if (boosting && mech.body.velocity.y > 0){
+		//mech.body.polygon.rotate angle*Math.PI/180;
+		if (mech.scale.x > -0.1){
+			mech.rotation = 90;
+			}
+		else{
+			mech.rotation = -90;
+			}
+		}
+	else{
+		//mech.body.polygon.rotate angle*Math.PI/180;
+		mech.rotation = 0;
 		}
 	
 	//ANIMATION START
@@ -616,7 +641,7 @@ window.onload = function() {
 			}
 		if (boostUp.isDown ){
 			fuel -= 30;
-			mech.body.velocity.y = -200;
+			mech.body.velocity.y = -170;
 			mech.body.velocity.y *= 5;
 			//mech.body.velocity.x *= 1.3;
 			cooldown = 25;
@@ -626,7 +651,7 @@ window.onload = function() {
 		}
 		if (S.isDown ){
 			fuel -= 30;
-			mech.body.velocity.y = 200;
+			mech.body.velocity.y = 170;
 			mech.body.velocity.y *= 5;
 			//mech.body.velocity.x *= 1.3;
 			cooldown = 25;
@@ -637,8 +662,8 @@ window.onload = function() {
 		if ( superboostUp.isDown){
 			fuel -= 50;
 			mech.body.velocity.y = -350;
-			mech.body.velocity.y *= 7;
-			cooldown = 40;
+			mech.body.velocity.y *= 3;
+			cooldown = 20;
 			doublejump = false;
 			meow.play();
 			mech.animations.play('boost2');
@@ -648,8 +673,8 @@ window.onload = function() {
 		if ( superboostD.isDown  ){
 			fuel -= 50;
 			mech.body.velocity.y = 350;
-			mech.body.velocity.y *= 7;
-			cooldown = 40;
+			mech.body.velocity.y *= 3;
+			cooldown = 20;
 			doublejump = false;
 			meow.play();
 			mech.animations.play('boost2');
@@ -662,16 +687,16 @@ window.onload = function() {
 			mech.body.velocity.y -= 35;
 			}
 			}
-		if (  cooldown == 0){
+		if (  dashing == false){
 			if (superboostR.isDown ){
-				mech.body.velocity.x = 4000;
+				mech.body.velocity.x = 2000;
 				dashing = true;
 				cooldown = 20;
 				meow.play();
 				mech.animations.play('boost2');
 				}
 			else if (superboostL.isDown ){
-				mech.body.velocity.x = -4000;
+				mech.body.velocity.x = -2000;
 				dashing = true;
 				cooldown = 20;
 				meow.play();
