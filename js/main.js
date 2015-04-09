@@ -6,28 +6,28 @@ window.onload = function() {
     
     function preload() {
 		game.load.image( 'phonesprite', 'assets/cat.png' );
-		game.load.tilemap( 'level', 'assets/mylevel7.csv', null, Phaser.Tilemap.CSV );
-		game.load.image( 'bg', 'assets/BG3.png' );
-		game.load.image( 'road', 'assets/clouds2.png' )
-		game.load.audio('clunk', 'assets/clunk.ogg');
-		game.load.audio('music', 'assets/choose-a-file2.ogg');
-		game.load.audio('vroom', 'assets/vroom.ogg');
+		game.load.tilemap( 'level', 'assets/mylevel8.csv', null, Phaser.Tilemap.CSV );
+		//game.load.image( 'bg', 'assets/BG3.png' );
+		//game.load.image( 'road', 'assets/clouds2.png' )
+		//game.load.audio('clunk', 'assets/clunk.ogg');
+		game.load.audio('music', 'assets/acapella.ogg');
+		//game.load.audio('vroom', 'assets/vroom.ogg');
 		game.load.audio('victory', 'assets/victory.ogg');
-		game.load.audio('lose', 'assets/lose.ogg');
+		//game.load.audio('lose', 'assets/lose.ogg');
 		game.load.audio('meow','assets/meow.ogg');
 		game.load.spritesheet('cats', 'assets/crafty4.png', 450, 300);
 		game.load.audio('pew','assets/pew.ogg');
-		game.load.image('tiles', 'assets/tilesB.png');
-		game.load.spritesheet('tiles2', 'assets/tiles2B.png');
-		game.load.spritesheet('tiles3', 'assets/tiles3Bn.png', 45, 45);
+		game.load.image('tiles', 'assets/tilesn.png');
+		game.load.spritesheet('tiles2', 'assets/tiles3C.png');
+		game.load.spritesheet('tiles3', 'assets/tiles2C.png', 45, 45);
 		game.load.audio('ow','assets/ow.ogg');
 		game.load.spritesheet('laser','assets/laser.png',400,400);
 		game.load.audio('kshhh', 'assets/kshhh.ogg');
-		game.load.image('splode', 'assets/explosion.png');
+		//game.load.image('splode', 'assets/explosion.png');
     }
     
 	//VARS
-	var wave;
+	var BIG = false;
 	var kshhh;
 	var ow;
 	var pew;
@@ -38,7 +38,6 @@ window.onload = function() {
 	var music;
 	var vroom;
     var mech;
-	var mechOn = false;
 	var floor;
 	var map;
 	var cursors;
@@ -55,7 +54,7 @@ window.onload = function() {
 	var currentPos;
 	var count = 0;
 	var tenth = 0;
-	var clunk;
+	//var clunk;
 	var doublejump = false;
 	var bg;
 	var road;
@@ -65,10 +64,10 @@ window.onload = function() {
 	var level;
 	var layer;
 	var layer2;
-	var killed2 = false;
-	var killed3 = false;
-	var killed4 = false;
-	var killed5 = false;
+	//var killed2 = false;
+	//var killed3 = false;
+	//var killed4 = false;
+	//var killed5 = false;
 	var fuel= 100;
 	var text;
 	var controlstext;
@@ -80,25 +79,24 @@ window.onload = function() {
 	var shootingW = false;
 	var proj;
 	var projpos = 0;
-	var wavepos = 0;
-	var timer2 = 0;
-	var timer3 = 0;
-	var timer4 = 0;
-	var timer5 = 0;
+	//var timer2 = 0;
+	//var timer3 = 0;
+	//var timer4 = 0;
+	//var timer5 = 0;
 	var mechposx =0;
 	var S;
 	var dashing;
 	var faster;
 	var boosting;
 	var Fbomb;
-	var shootR;
-	var shootL;
-	var shootW;
-	var splode;
-	var superboostUp;
-	var superboostD;
-	var superboostL;
-	var superboostR;
+	//var shootR;
+	//var shootL;
+	//var shootW;
+	//var splode;
+	//var superboostUp;
+	//var superboostD;
+	//var superboostL;
+	//var superboostR;
 	var current;
 	var level2;
 	var blessed = false;
@@ -106,9 +104,9 @@ window.onload = function() {
     function create() {
 	 game.physics.startSystem(Phaser.Physics.ARCADE);
 	 //game.physics.startSystem(Phaser.Physics.P2JS);
-		bg = game.add.tileSprite(0, 0, 12000, 10000, 'tiles');
-		bg.fixedToCamera=true;
-		road = game.add.tileSprite(0, 0, 12000, 10000, 'road');
+		//bg = game.add.tileSprite(0, 0, 12000, 10000, 'tiles');
+		//bg.fixedToCamera=true;
+		//road = game.add.tileSprite(0, 0, 12000, 10000, 'road');
 		
 		//game.world.setBounds(0, 0, 2400, 12000);
 		level2 = game.add.tilemap('level',45,45,50,50);
@@ -117,11 +115,12 @@ window.onload = function() {
 		//level.setCollisionBetween(1,51 );
 		layer2 = level2.createLayer(0);
 		level2.setCollision(50,layer2);
-		level2.addTilesetImage(level,'bg',1,1,0,0,0);
+		level2.addTilesetImage(level,'tiles',1,1,0,0,0);
 		layer = level.createLayer(0);
 		level.setCollisionBetween(1,51,layer);
 		layer.resizeWorld();
-		level.addTilesetImage(level,'bg',1,1,0,0,0);
+		level.addTilesetImage(level,'tiles',1,1,0,0,0);
+		level.addTilesetImage(layer,'tiles',45,45,0,0,24);
 		level.addTilesetImage(layer,'tiles2',45,45,0,0,25);
 		level.addTilesetImage(layer,'tiles3',45,45,0,0,50);
 		
@@ -156,12 +155,7 @@ window.onload = function() {
 		proj.height = 50;
 		proj.exists = false;
 		
-		//Wave
-		wave = game.add.sprite(0,0,'laser');
-		game.physics.enable( wave, Phaser.Physics.ARCADE );
-		wave.width = 40;
-		wave.height = 200;
-		wave.exists = false;
+		
 		
 		
         // MECH
@@ -218,7 +212,7 @@ window.onload = function() {
 		goal.height = 50;
 		//goal.body.gravity = 200;
 		
-		blessing = game.add.sprite( mech.body.x + 1800, mech.body.y -900, 'laser' );
+		blessing = game.add.sprite( mech.body.x + 4850, mech.body.y -1950, 'laser' );
 		game.physics.enable( blessing, Phaser.Physics.ARCADE );
 		blessing.body.collideWorldBounds = true;
 		blessing.anchor.setTo(0.5,0.5);
@@ -230,15 +224,15 @@ window.onload = function() {
 		//AUDIO
 		pew = game.add.audio('pew',0.08);
 		pew.allowMultiple = true;
-		clunk = game.add.audio('clunk',0.2);
-		vroom = game.add.audio('vroom',0.25);
-		music = game.add.audio('music',0.5,true );
+		//clunk = game.add.audio('clunk',0.2);
+		//vroom = game.add.audio('vroom',0.25);
+		music = game.add.audio('music',0.4,true );
 		win = game.add.audio('victory',3);
-		lose = game.add.audio('lose');
-		meow = game.add.audio('meow',0.15);
-		ow = game.add.audio('ow', 0.2);
+		//lose = game.add.audio('lose');
+		meow = game.add.audio('meow',0.6);
+		ow = game.add.audio('ow', 0.5);
 		ow.allowMultiple = true;
-		kshhh = game.add.audio('kshhh',0.2);
+		kshhh = game.add.audio('kshhh',0.5);
 		music.play();
 		//CONTROLS
 		
@@ -247,15 +241,7 @@ window.onload = function() {
 		boostR = game.input.keyboard.addKey(Phaser.Keyboard.D);
 		boostL = game.input.keyboard.addKey(Phaser.Keyboard.A);
 		boostUp = game.input.keyboard.addKey(Phaser.Keyboard.W);
-		shootR = game.input.keyboard.addKey(Phaser.Keyboard.O);
-		shootL = game.input.keyboard.addKey(Phaser.Keyboard.U);
-		shootW = game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
-		superboostUp = game.input.keyboard.addKey(Phaser.Keyboard.I);
-		superboostR = game.input.keyboard.addKey(Phaser.Keyboard.L);
-		superboostL = game.input.keyboard.addKey(Phaser.Keyboard.J);
-		superboostD = game.input.keyboard.addKey(Phaser.Keyboard.K);
 		S = game.input.keyboard.addKey(Phaser.Keyboard.S);
-		Fbomb = game.input.keyboard.addKey(Phaser.Keyboard.F);
 	
 		//ANIMATIONS
 		phone2.animations.add('walk',[0,1,2],3,true);
@@ -271,7 +257,6 @@ window.onload = function() {
 		//speedUpgrade.animations.add('die',[3,4],3,true);
 		goal.animations.add('die',[3,4],3,true);
 		proj.animations.add('laser',[0,1],20,true);
-		wave.animations.add('laser',[0,1],20,true);
 		mech.animations.add('move',[0,1,2],7, true);
 		mech.animations.add('spike',[3,4,5],7, true);
 		mech.animations.play('move');
@@ -290,7 +275,7 @@ window.onload = function() {
 			}
 		}
 	//SPRITE MOVEMENT
-	if (mech.width < 500){
+	if (!BIG){
 	if (mech.body.velocity.x < 0){
 		mech.scale.x = -.25;
 		}
@@ -322,7 +307,7 @@ window.onload = function() {
 	
 		//COLLISION
 		
-		if (mech.width < 500){game.physics.arcade.collide(mech, level.currentLayer);}
+		if (!BIG){game.physics.arcade.collide(mech, level.currentLayer);}
 		game.physics.arcade.collide(phone2, layer);
 		game.physics.arcade.collide(speedUpgrade, layer);
 		game.physics.arcade.collide(drillUpgrade, layer);
@@ -358,23 +343,7 @@ window.onload = function() {
 			pew.play();
 			proj.animations.play('laser');
 			}
-			//Wave
-			wave.body.y = mech.body.y;
-			if (shootingW && (mech.body.x < wave.body.x - 250 || wavepos > wave.body.x + 250)){
-			shootingW = false;
-			wave.exists = false;
-			}
-		if (shootW.isDown && !shootingW){
-			wave.exists = true;
-			wave.body.x = mech.body.x -200;
-			wave.body.y = mech.body.y ;
-			wave.body.velocity.y = 0;
-			wave.body.velocity.x = 1000;
-			wavepos = wave.body.x;
-			shootingW = true;
-			wave.animations.play('laser');
-			pew.play();
-			}
+			
 			// JUMP
 		if (jump.isDown && cooldown == 0){ //&& mech.body.onFloor() || jump.isDown && mech.body.touching.down){
         //mech.body.velocity.y = -250;
@@ -398,7 +367,7 @@ window.onload = function() {
 		if (boostUp.isDown ){
 			fuel -= 30;
 			mech.body.velocity.y = -170;
-			mech.body.velocity.y *= 3;
+			mech.body.velocity.y *= 4;
 			if(faster){
 				mech.body.velocity.y = -170;
 				mech.body.velocity.y *= 6;
@@ -411,7 +380,7 @@ window.onload = function() {
 		if (S.isDown ){
 			fuel -= 30;
 			mech.body.velocity.y = 170;
-			mech.body.velocity.y *= 3;
+			mech.body.velocity.y *= 4;
 			if(faster){
 				mech.body.velocity.y = 170;
 				mech.body.velocity.y *= 6;
@@ -423,7 +392,7 @@ window.onload = function() {
 		if (boostL.isDown ){
 			fuel -= 30;
 			mech.body.velocity.x = -170;
-			mech.body.velocity.x *= 3;
+			mech.body.velocity.x *= 4;
 			if(faster){
 				mech.body.velocity.x = -170;
 				mech.body.velocity.x *= 6;
@@ -435,7 +404,7 @@ window.onload = function() {
 		if (boostR.isDown ){
 			fuel -= 30;
 			mech.body.velocity.x = 170;
-			mech.body.velocity.x *= 3;
+			mech.body.velocity.x *= 4;
 			if(faster){
 				mech.body.velocity.x = 170;
 				mech.body.velocity.x *= 6;
@@ -451,10 +420,12 @@ window.onload = function() {
 		
 		if (game.physics.arcade.collide(mech,drillUpgrade)){
 				dashing = true;
+				kshhh.play();
 				drillUpgrade.kill();
 				}
 		if (game.physics.arcade.collide(mech,speedUpgrade)){
 			faster = true;
+			kshhh.play();
 			speedUpgrade.kill();
 			}
 		if (game.physics.arcade.collide(mech,goal)){
@@ -462,10 +433,12 @@ window.onload = function() {
 			mech.height *= 5;
 			mech.rotation = 0;
 			win.play();
+			BIG = true;
 			goal.kill();
 			}
 		if (game.physics.arcade.collide(mech,blessing)){
 				blessed = true;
+				kshhh.play();
 				blessing.kill();
 			}
 		
