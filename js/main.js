@@ -6,7 +6,7 @@ window.onload = function() {
     
     function preload() {
 		game.load.image( 'phonesprite', 'assets/cat.png' );
-		game.load.tilemap( 'level', 'assets/mylevel8.csv', null, Phaser.Tilemap.CSV );
+		game.load.tilemap( 'level', 'assets/mylevel9.csv', null, Phaser.Tilemap.CSV );
 		//game.load.image( 'bg', 'assets/BG3.png' );
 		//game.load.image( 'road', 'assets/clouds2.png' )
 		//game.load.audio('clunk', 'assets/clunk.ogg');
