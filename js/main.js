@@ -549,11 +549,10 @@ window.onload = function() {
 			shooting = false;
 			
 			}
-		}
-		if (game.physics.arcade.collide(mech, layer3)){
-			mech.kill();
-			lose.play();
+		if (winText == false && !music.isPlaying){
+			music.play();
 			}
+		}
 		
 		function updateText(){
 				text.setText("You Win");
