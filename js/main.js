@@ -26,9 +26,16 @@ window.onload = function() {
 		game.load.audio('kshhh', 'assets/kshhh.ogg');
 		game.load.audio('ending','assets/Super Mario World Ending.ogg');
 		//game.load.image('splode', 'assets/explosion.png');
+		game.load.image('road', 'assets/road.png');
     }
     
 	//VARS
+	var airborne = false;
+	var touchr =false;
+	var touchl=false;
+	var touchu = false;
+	var touchd=false;
+	var road;
 	var winText = false;
 	var BIG = false;
 	var bounceUpgrade;
@@ -110,6 +117,7 @@ window.onload = function() {
 	var blessing;
     function create() {
 	 game.physics.startSystem(Phaser.Physics.ARCADE);
+	 
 	 //game.physics.startSystem(Phaser.Physics.P2JS);
 		//bg = game.add.tileSprite(0, 0, 12000, 10000, 'tiles');
 		//bg.fixedToCamera=true;
@@ -138,12 +146,13 @@ window.onload = function() {
 		level.setCollision(24,false,layer);
 		//level.setCollision(75,layer2);
 		layer.resizeWorld();
-		level.addTilesetImage(level,'tiles',1,1,0,0,0);
+		level.addTilesetImage(layer,'tiles',1,1,0,0,0);
 		level.addTilesetImage(layer,'tiles',45,45,0,0,24);
 		level.addTilesetImage(layer,'tiles2',45,45,0,0,25);
 		level.addTilesetImage(layer,'tiles3',45,45,0,0,50);
 		level.addTilesetImage(layer,'danger',45,45,0,0,75);
 		level.collisionLayer = layer;
+		//road = game.add.tileSprite(0, 0, 1200, 400, 'road');
 		
 		//layer2.debug = true;
 		//layer2.resizeWorld();
@@ -190,8 +199,8 @@ window.onload = function() {
         mech.anchor.setTo( 0.5, 0.5 );
 		
         game.physics.enable( mech );
-		mech.body.bounce.y = 10;
-		mech.body.bounce.x = 10;
+		//mech.body.bounce.y = 10;
+		//mech.body.bounce.x = 10;
 		//game.physics.arcade.collide(mech, layer);
 		//game.physics.arcade.collide(mech, layer2);
 		//mech.body.acceleration.y = 2000;
@@ -199,6 +208,7 @@ window.onload = function() {
 		game.physics.arcade.TILE_BIAS = 40;
 		
 		game.physics.arcade.gravity.y = 0;
+		mech.body.gravity.y = 2000;
 		
 		
 		
@@ -305,6 +315,14 @@ window.onload = function() {
     
     function update() {
 	
+	if (mech.body.touching.right){
+		mech.body.gravity.x = 2000;
+		meow.play();
+		}
+		else{
+			//mech.body.gravity.x = 0;
+			}
+	
 	//Text
 	if (winText){
 		updateText();
@@ -349,8 +367,46 @@ window.onload = function() {
 	
 	
 		//COLLISION
-		
 		if (!BIG && game.physics.arcade.collide(mech, level.collisionLayer)){
+		if (mech.body.blocked.right){
+			mech.body.gravity.x = 2000;
+			mech.body.gravity.y = 0;
+			touchr = true;
+		}
+		else if(mech.body.blocked.left){
+			mech.body.gravity.x = -2000;
+			touchl = true;
+			mech.body.gravity.y = 0;
+			}
+		else{
+			mech.body.gravity.x = 0;
+			}
+		if (mech.body.blocked.down ){
+			mech.body.gravity.y = 2000;
+			mech.body.gravity.x = 0;
+			touchd = true;
+		}
+		else if(mech.body.blocked.up){
+			mech.body.gravity.y = -2000;
+			mech.body.gravity.x = 0;
+			touchu = true;
+			}
+		if (!mech.body.blocked.up){
+			touchu = false;
+			}
+		if (!mech.body.blocked.left){
+			touchl = false;
+			}
+		if (!mech.body.blocked.down){
+			touchd = false;
+			}
+		if (!mech.body.blocked.right){
+			touchr = false;
+			}
+		if (!touchr && !touchl && !touchu && !touchd){
+			airborne = true;
+			}
+		else { airborne = false;}
 			
 			}
 		//game.physics.arcade.collide(phone2, layer);
@@ -392,6 +448,22 @@ window.onload = function() {
 			// JUMP
 		if (jump.isDown && cooldown == 0){ //&& mech.body.onFloor() || jump.isDown && mech.body.touching.down){
         //mech.body.velocity.y = -250;
+		if (touchd){
+			mech.body.velocity.y = -4250;
+			}
+		if (touchu){
+			mech.body.velocity.y = 4250;
+			}
+		if (touchr){
+			mech.body.velocity.x = -4250;
+			}
+		if (touchl){
+			mech.body.velocity.x = 4250;
+			}
+		touchu = false;
+		touchd = false;
+		touchl = false;
+		touchr = false;
 		
 		if(!pew.isPlaying){
 		pew.play();
@@ -413,9 +485,10 @@ window.onload = function() {
 			}
 		if (boostUp.isDown){
 			fuel -= 30;
-			mech.body.acceleration.y = -4500;
+			if (touchl || touchr){
+			mech.body.acceleration.y =-4500;
 			mech.body.maxVelocity.y = 750;
-			
+			}
 			
 			//mech.body.acceleration.y = 60;
 			if(faster){
@@ -429,8 +502,11 @@ window.onload = function() {
 		}
 		if (S.isDown ){
 			fuel -= 30;
+			if (touchl || touchr){
 			mech.body.acceleration.y =4500;
 			mech.body.maxVelocity.y = 750;
+			}
+			
 			if(faster){
 				mech.body.acceleration.y = 6000;
 			mech.body.maxVelocity.y = 1100;
@@ -441,9 +517,10 @@ window.onload = function() {
 		}
 		if (boostL.isDown ){
 			fuel -= 30;
-			mech.body.acceleration.x = -4500;
+			if (touchd || touchu ){
+			mech.body.acceleration.x =-4500;
 			mech.body.maxVelocity.x = 750;
-			
+			}
 			
 			//mech.body.acceleration.y = 60;
 			if(faster){
@@ -456,8 +533,10 @@ window.onload = function() {
 		}
 		if (boostR.isDown ){
 			fuel -= 30;
+			if (touchd || touchu ){
 			mech.body.acceleration.x =4500;
 			mech.body.maxVelocity.x = 750;
+			}
 			if(faster){
 				mech.body.acceleration.x = 6000;
 				mech.body.maxVelocity.x = 1100;
