@@ -6,8 +6,8 @@ window.onload = function() {
     
     function preload() {
 		game.load.image( 'phonesprite', 'assets/cat.png' );
-		game.load.tilemap( 'level', 'assets/racetrack2.csv', null, Phaser.Tilemap.CSV );
-		game.load.image( 'bg', 'assets/BG3.png' );
+		game.load.tilemap( 'level', 'assets/racetrack3.csv', null, Phaser.Tilemap.CSV );
+		game.load.image( 'bg', 'assets/BGcar3.png' );
 		//game.load.image( 'road', 'assets/clouds2.png' )
 		//game.load.audio('clunk', 'assets/clunk.ogg');
 		game.load.audio('music', 'assets/12-tripod.ogg');
@@ -20,7 +20,7 @@ window.onload = function() {
 		game.load.image('tiles', 'assets/tilesn.png');
 		game.load.image('danger', 'assets/tiles3Bn.png');
 		game.load.spritesheet('tiles2', 'assets/tiles3Bn.png');
-		game.load.spritesheet('tiles3', 'assets/tiles2C.png', 45, 45);
+		game.load.spritesheet('tiles3', 'assets/tiles4.png', 45, 45);
 		game.load.audio('ow','assets/ow.ogg');
 		game.load.spritesheet('laser','assets/laser.png',400,400);
 		game.load.audio('kshhh', 'assets/kshhh.ogg');
@@ -114,7 +114,7 @@ window.onload = function() {
 	var level2;
 	var blessed = false;
 	var blessing;
-	var score = 99999;
+	var score = 1499;
     function create() {
 	 game.physics.startSystem(Phaser.Physics.ARCADE);
 	 
@@ -247,7 +247,7 @@ window.onload = function() {
 		drillUpgrade.width = 50;
 		drillUpgrade.height = 50;
 		
-		goal = game.add.sprite( mech.body.x + 3200 , mech.body.y +2500, 'laser' );
+		goal = game.add.sprite( mech.body.x + 3200 , mech.body.y +2700, 'laser' );
 		game.physics.enable( goal, Phaser.Physics.ARCADE );
 		goal.body.collideWorldBounds = true;
 		goal.anchor.setTo(0.5,0.5);
@@ -308,17 +308,23 @@ window.onload = function() {
 		mech.animations.play('move');
 		game.camera.follow(mech);
 		
-		var style = { font: "35px Verdana", fill: "#aaaaaa", align: "center" };
+		var style = { font: "35px Verdana", fill: "#000000", align: "center" };
         
-		text = game.add.text( mech.body.x, mech.body.y, "Score: "+score , style );
+		text = game.add.text( 20, 20, "Score: "+score , style );
 		text.fixedToCamera = true;
 		text.inputEnabled = true;
     }
     
     function update() {
-	
+	text.setText("Score: "+score );
 	dashing = true;
-	score -=1;
+	if (!winText){
+		score -=1;
+		}
+	else{
+		text.width = 500;
+		text.height = 500;
+		}
 	//Text
 	if (winText){
 		updateText();
@@ -451,7 +457,7 @@ window.onload = function() {
 			fuel -= 30;
 			if (mech.body.velocity.x <= 1100){
 			mech.body.acceleration.x =-4500;
-			mech.body.maxVelocity.x = 2050;
+			mech.body.maxVelocity.x = 1750;
 			if(faster){
 			mech.body.acceleration.x = -6000;
 			mech.body.maxVelocity.x = 3100;
@@ -470,7 +476,7 @@ window.onload = function() {
 			fuel -= 30;
 			if (mech.body.velocity.x >= -1100){
 			mech.body.acceleration.x =4500;
-			mech.body.maxVelocity.x = 2050;
+			mech.body.maxVelocity.x = 1750;
 			if(faster){
 				mech.body.acceleration.x = 6000;
 				mech.body.maxVelocity.x = 3100;
@@ -497,9 +503,6 @@ window.onload = function() {
 			faster = true;
 			kshhh.play();
 			speedUpgrade.kill();
-			text.setText ("Speed");
-			text.x = mech.body.x;
-			text.y = mech.body.y;
 			text.alpha = 100;
 			}
 		if (game.physics.arcade.overlap(mech,bounceUpgrade)){
@@ -510,7 +513,12 @@ window.onload = function() {
 			mech.width *= 5;
 			mech.height *= 5;
 			mech.rotation = 0;
-			win.play();
+			if (score >0){
+				win.play();
+				}
+			else{
+				lose.play();
+				}
 			BIG = true;
 			goal.kill();
 			music.stop();
@@ -523,7 +531,7 @@ window.onload = function() {
 		if (game.physics.arcade.overlap(mech,blessing)){
 				blessed = true;
 				kshhh.play();
-				mech.body.x = goal.body.x;
+				mech.body.x = goal.body.x - 1000;
 				mech.body.y = goal.body.y - 200;
 			}
 		
@@ -558,9 +566,9 @@ window.onload = function() {
 		}
 		
 		function updateText(){
-				text.setText("You Win");
-				text.height += 15;
-				text.width += 15;
+				//text.setText("You Win");
+				//text.height += 15;
+				//text.width += 15;
 			
 			}
 }
