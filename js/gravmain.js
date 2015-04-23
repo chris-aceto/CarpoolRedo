@@ -2,24 +2,24 @@ window.onload = function() {
     
     "use strict";
     
-    var game = new Phaser.Game( 1400, 600, Phaser.CANVAS, 'game', { preload: preload, create: create, update: update } );
+    var game = new Phaser.Game( 1200, 800, Phaser.CANVAS, 'game', { preload: preload, create: create, update: update } );
     
     function preload() {
 		game.load.image( 'phonesprite', 'assets/cat.png' );
-		game.load.tilemap( 'level', 'assets/racetrack2.csv', null, Phaser.Tilemap.CSV );
-		game.load.image( 'bg', 'assets/BG3.png' );
+		game.load.tilemap( 'level', 'assets/mylevel11.csv', null, Phaser.Tilemap.CSV );
+		//game.load.image( 'bg', 'assets/BG3.png' );
 		//game.load.image( 'road', 'assets/clouds2.png' )
 		//game.load.audio('clunk', 'assets/clunk.ogg');
-		game.load.audio('music', 'assets/12-tripod.ogg');
+		game.load.audio('music', 'assets/acapella2.ogg');
 		//game.load.audio('vroom', 'assets/vroom.ogg');
 		game.load.audio('victory', 'assets/victory.ogg');
 		game.load.audio('lose', 'assets/lose.ogg');
 		game.load.audio('meow','assets/meow.ogg');
-		game.load.spritesheet('cats', 'assets/caryou.png', 594, 400);
+		game.load.spritesheet('cats', 'assets/crafty4.png', 450, 300);
 		game.load.audio('pew','assets/pew.ogg');
 		game.load.image('tiles', 'assets/tilesn.png');
 		game.load.image('danger', 'assets/tiles3Bn.png');
-		game.load.spritesheet('tiles2', 'assets/tiles3Bn.png');
+		game.load.spritesheet('tiles2', 'assets/tiles3C.png');
 		game.load.spritesheet('tiles3', 'assets/tiles2C.png', 45, 45);
 		game.load.audio('ow','assets/ow.ogg');
 		game.load.spritesheet('laser','assets/laser.png',400,400);
@@ -30,6 +30,7 @@ window.onload = function() {
     }
     
 	//VARS
+	var airborne = false;
 	var touchr =false;
 	var touchl=false;
 	var touchu = false;
@@ -114,13 +115,12 @@ window.onload = function() {
 	var level2;
 	var blessed = false;
 	var blessing;
-	var score = 99999;
     function create() {
 	 game.physics.startSystem(Phaser.Physics.ARCADE);
 	 
 	 //game.physics.startSystem(Phaser.Physics.P2JS);
-		bg = game.add.tileSprite(0, 0, 12000, 10000, 'bg');
-		bg.fixedToCamera=true;
+		//bg = game.add.tileSprite(0, 0, 12000, 10000, 'tiles');
+		//bg.fixedToCamera=true;
 		//road = game.add.tileSprite(0, 0, 12000, 10000, 'road');
 		
 		//game.world.setBounds(0, 0, 2400, 12000);
@@ -144,7 +144,6 @@ window.onload = function() {
 		//game.physics.arcade.enable(layer);
 		level.setCollisionBetween(1,51,layer);
 		level.setCollision(24,false,layer);
-		level.setCollision(25,false,layer);
 		//level.setCollision(75,layer2);
 		layer.resizeWorld();
 		level.addTilesetImage(layer,'tiles',1,1,0,0,0);
@@ -190,7 +189,7 @@ window.onload = function() {
 		
 		
         // MECH
-        mech = game.add.sprite( 200 , 1100, 'cats' );
+        mech = game.add.sprite( 200 , 2250, 'cats' );
 		mech.width = 90;
 		mech.height = 120;
 		//mech.body.x = -10000;
@@ -209,7 +208,7 @@ window.onload = function() {
 		game.physics.arcade.TILE_BIAS = 40;
 		
 		game.physics.arcade.gravity.y = 0;
-		mech.body.gravity.y = 8000;
+		mech.body.gravity.y = 2000;
 		
 		
 		
@@ -226,7 +225,7 @@ window.onload = function() {
 		phone2.body.moves = false;
 		//phone2 = makePhone(1000, -1000);
 		
-		bounceUpgrade = game.add.sprite( mech.body.x + 300, 1250, 'laser' );
+		bounceUpgrade = game.add.sprite( mech.body.x + 2450, 2050, 'laser' );
 		game.physics.enable( bounceUpgrade, Phaser.Physics.ARCADE );
 		bounceUpgrade.body.collideWorldBounds = true;
 		bounceUpgrade.anchor.setTo(0.5,0.5);
@@ -240,14 +239,14 @@ window.onload = function() {
 		speedUpgrade.width = 50;
 		speedUpgrade.height = 50;
 		
-		drillUpgrade = game.add.sprite( mech.body.x + 5200, 2000, 'laser' );
+		drillUpgrade = game.add.sprite( mech.body.x + 5700, 1500, 'laser' );
 		game.physics.enable( drillUpgrade, Phaser.Physics.ARCADE );
 		drillUpgrade.body.collideWorldBounds = true;
 		drillUpgrade.anchor.setTo(0.5,0.5);
 		drillUpgrade.width = 50;
 		drillUpgrade.height = 50;
 		
-		goal = game.add.sprite( mech.body.x + 3200 , mech.body.y +2500, 'laser' );
+		goal = game.add.sprite( mech.body.x , mech.body.y -700, 'laser' );
 		game.physics.enable( goal, Phaser.Physics.ARCADE );
 		goal.body.collideWorldBounds = true;
 		goal.anchor.setTo(0.5,0.5);
@@ -255,7 +254,7 @@ window.onload = function() {
 		goal.height = 50;
 		//goal.body.gravity = 200;
 		
-		blessing = game.add.sprite( mech.body.x + 2450, mech.body.y + 1050, 'laser' );
+		blessing = game.add.sprite( mech.body.x + 4850, mech.body.y -1950, 'laser' );
 		game.physics.enable( blessing, Phaser.Physics.ARCADE );
 		blessing.body.collideWorldBounds = true;
 		blessing.anchor.setTo(0.5,0.5);
@@ -289,8 +288,6 @@ window.onload = function() {
 	
 		//ANIMATIONS
 		phone2.animations.add('walk',[0,1,2],3,true);
-		bounceUpgrade.animations.add('bounce',[1],1,true);
-		bounceUpgrade.animations.play('bounce',[1],1,true);
 		drillUpgrade.animations.add('flash',[0,1],20,true);
 		speedUpgrade.animations.add('flash',[0,1],20,true);
 		drillUpgrade.animations.play('flash');
@@ -310,39 +307,52 @@ window.onload = function() {
 		
 		var style = { font: "35px Verdana", fill: "#aaaaaa", align: "center" };
         
-		text = game.add.text( mech.body.x, mech.body.y, "Score: "+score , style );
-		text.fixedToCamera = true;
+		text = game.add.text( mech.body.x, mech.body.y, "Null", style );
+		//text.fixedToCamera = true;
 		text.inputEnabled = true;
+		text.alpha = 0;
     }
     
     function update() {
 	
-	dashing = true;
-	score -=1;
+	if (mech.body.touching.right){
+		mech.body.gravity.x = 2000;
+		meow.play();
+		}
+		else{
+			//mech.body.gravity.x = 0;
+			}
+	
 	//Text
 	if (winText){
 		updateText();
 		}
-	//SPRITE MOVEMENT
-	if (!BIG){
-	//if (mech.body.velocity.x < 0){
-	if (boostL.isDown){
-		mech.scale.x = -.25;
+	if (text.alpha > 0){
+		text.alpha -= 1;
 		}
-	//if (mech.body.velocity.x > 0){
-	if (boostR.isDown){
-		mech.scale.x = .25;
-		}
-	if (mech.body.velocity.y < 0 && !touchd){
-		mech.rotation = 20;
-		if (mech.scale.x == -.25){
-			mech.rotation = -20;
+	if (phone2.exists && mech.body.y < 1500 && mech.body.x < 2000){
+		if (!meow.isPlaying){
+			meow.play();
 			}
 		}
-	else if (mech.body.velocity.y > 0 && !touchd){
-		mech.rotation = -20;
+	//SPRITE MOVEMENT
+	if (!BIG){
+	if (mech.body.velocity.x < 0){
+		mech.scale.x = -.25;
+		}
+	if (mech.body.velocity.x > 0){
+		mech.scale.x = .25;
+		}
+	if (mech.body.velocity.y < 0){
+		mech.rotation = 80;
 		if (mech.scale.x == -.25){
-			mech.rotation = -20;
+			mech.rotation = -80;
+			}
+		}
+	else if (mech.body.velocity.y > 0){
+		mech.rotation = -80;
+		if (mech.scale.x == -.25){
+			mech.rotation = 80;
 			}
 		
 		}
@@ -358,21 +368,46 @@ window.onload = function() {
 	
 		//COLLISION
 		if (!BIG && game.physics.arcade.collide(mech, level.collisionLayer)){
-		
+		if (mech.body.blocked.right){
+			mech.body.gravity.x = 2000;
+			mech.body.gravity.y = 0;
+			touchr = true;
+		}
+		else if(mech.body.blocked.left){
+			mech.body.gravity.x = -2000;
+			touchl = true;
+			mech.body.gravity.y = 0;
+			}
+		else{
+			mech.body.gravity.x = 0;
+			}
 		if (mech.body.blocked.down ){
+			mech.body.gravity.y = 2000;
+			mech.body.gravity.x = 0;
 			touchd = true;
 		}
-		if (mech.body.blocked.right && mech.body.blocked.down){
-			mech.body.velocity.y -= 2000;
-			mech.body.velocity.x += 2000;
-		}
-		if (mech.body.blocked.left  && mech.body.blocked.down){
-			mech.body.velocity.y -= 2000;
-			mech.body.velocity.x -= 2000;
-		}
+		else if(mech.body.blocked.up){
+			mech.body.gravity.y = -2000;
+			mech.body.gravity.x = 0;
+			touchu = true;
+			}
+		if (!mech.body.blocked.up){
+			touchu = false;
+			}
+		if (!mech.body.blocked.left){
+			touchl = false;
+			}
 		if (!mech.body.blocked.down){
 			touchd = false;
 			}
+		if (!mech.body.blocked.right){
+			touchr = false;
+			}
+		if (!touchr && !touchl && !touchu && !touchd){
+			airborne = true;
+			}
+		else { airborne = false;}
+			
 			}
 		//game.physics.arcade.collide(phone2, layer);
 		//game.physics.arcade.collide(speedUpgrade, layer);
@@ -414,7 +449,16 @@ window.onload = function() {
 		if (jump.isDown && cooldown == 0){ //&& mech.body.onFloor() || jump.isDown && mech.body.touching.down){
         //mech.body.velocity.y = -250;
 		if (touchd){
-			mech.body.velocity.y = -2750;
+			mech.body.velocity.y = -4250;
+			}
+		if (touchu){
+			mech.body.velocity.y = 4250;
+			}
+		if (touchr){
+			mech.body.velocity.x = -4250;
+			}
+		if (touchl){
+			mech.body.velocity.x = 4250;
 			}
 		touchu = false;
 		touchd = false;
@@ -441,44 +485,62 @@ window.onload = function() {
 			}
 		if (boostUp.isDown){
 			fuel -= 30;
-						
+			if (touchl || touchr){
+			mech.body.acceleration.y =-4500;
+			mech.body.maxVelocity.y = 750;
+			}
+			
+			//mech.body.acceleration.y = 60;
+			if(faster){
+			mech.body.acceleration.y = -6000;
+			mech.body.maxVelocity.y = 1100;
+				}
+			//mech.body.velocity.x *= 1.3;
+			//cooldown = 5;
+			doublejump = false;
+			//vroom.play();
 		}
 		if (S.isDown ){
 			fuel -= 30;
+			if (touchl || touchr){
+			mech.body.acceleration.y =4500;
+			mech.body.maxVelocity.y = 750;
+			}
 			
+			if(faster){
+				mech.body.acceleration.y = 6000;
+			mech.body.maxVelocity.y = 1100;
+				}
+			//mech.body.velocity.x *= 1.3;
+			//cooldown = 5;
+			doublejump = false;
 		}
 		if (boostL.isDown ){
 			fuel -= 30;
-			if (mech.body.velocity.x <= 1100){
+			if (touchd || touchu ){
 			mech.body.acceleration.x =-4500;
-			mech.body.maxVelocity.x = 2050;
-			if(faster){
-			mech.body.acceleration.x = -6000;
-			mech.body.maxVelocity.x = 3100;
-				}
+			mech.body.maxVelocity.x = 750;
 			}
-			else { mech.body.velocity.x *= .5;
-			kshhh.play()}
 			
 			//mech.body.acceleration.y = 60;
-			
+			if(faster){
+			mech.body.acceleration.x = -6000;
+			mech.body.maxVelocity.x = 1100;
+				}
 			//mech.body.velocity.x *= 1.3;
 			//cooldown = 5;
 			doublejump = false;
 		}
 		if (boostR.isDown ){
 			fuel -= 30;
-			if (mech.body.velocity.x >= -1100){
+			if (touchd || touchu ){
 			mech.body.acceleration.x =4500;
-			mech.body.maxVelocity.x = 2050;
+			mech.body.maxVelocity.x = 750;
+			}
 			if(faster){
 				mech.body.acceleration.x = 6000;
-				mech.body.maxVelocity.x = 3100;
+				mech.body.maxVelocity.x = 1100;
 				}
-			}
-			
-			else { mech.body.velocity.x *= .5;
-			kshhh.play()}
 			//mech.body.velocity.x *= 1.3;
 			//cooldown = 5;
 			doublejump = false;
@@ -488,12 +550,18 @@ window.onload = function() {
 		
 		//Dash
 		
-		if (game.physics.arcade.overlap(mech,drillUpgrade)){
+		if (game.physics.arcade.collide(mech,drillUpgrade)){
 				dashing = true;
 				kshhh.play();
-				mech.body.velocity.y -= 3000;
+				drillUpgrade.kill();
+				mech.animations.play('spike');
+				level.setCollision(25,false,layer);
+				text.setText ("Drill");
+				text.x = mech.body.x;
+				text.y = mech.body.y;
+				text.alpha = 100;
 				}
-		if (game.physics.arcade.overlap(mech,speedUpgrade)){
+		if (game.physics.arcade.collide(mech,speedUpgrade)){
 			faster = true;
 			kshhh.play();
 			speedUpgrade.kill();
@@ -502,9 +570,15 @@ window.onload = function() {
 			text.y = mech.body.y;
 			text.alpha = 100;
 			}
-		if (game.physics.arcade.overlap(mech,bounceUpgrade)){
+		if (game.physics.arcade.collide(mech,bounceUpgrade)){
+			mech.body.bounce.x = 0.25;
+			mech.body.bounce.y = 0.25;
 			kshhh.play();
-			mech.body.velocity.y -= 3000;
+			bounceUpgrade.kill();
+			text.setText ("Stabilizers");
+			text.x = mech.body.x;
+			text.y = mech.body.y;
+			text.alpha = 100;
 			}
 		if (game.physics.arcade.collide(mech,goal)){
 			mech.width *= 5;
@@ -520,11 +594,14 @@ window.onload = function() {
 			text.y = mech.body.y-300;
 			text.alpha = 100;
 			}
-		if (game.physics.arcade.overlap(mech,blessing)){
+		if (game.physics.arcade.collide(mech,blessing)){
 				blessed = true;
 				kshhh.play();
-				mech.body.x = goal.body.x;
-				mech.body.y = goal.body.y - 200;
+				blessing.kill();
+				text.setText ("Laser");
+				text.x = mech.body.x;
+				text.y = mech.body.y;
+				text.alpha = 100;
 			}
 		
 		if (game.physics.arcade.collide(mech,phone2)){
@@ -537,7 +614,6 @@ window.onload = function() {
 					}
 				
 			}
-			phone2.kill();
 		if (game.physics.arcade.collide(proj,phone2)){
 			ow.play()
 				text.setText ("KO");
